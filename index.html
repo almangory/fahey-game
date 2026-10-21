@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>لعبة فاهي</title>
+  <meta name="description" content="لعبة الذكاء والتخمين الاجتماعي باللهجات السودانية والسعودية والمصرية">
+  <meta name="theme-color" content="#f8fafc">
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- الخطوط العربية -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- الأنماط البصرية النهارية المشرقة -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div id="app-container">
+    
+    <!-- الشريط العلوي النهاري الأنيق -->
+    <header class="game-header">
+      <div class="game-header-content">
+        <button id="header-back-btn" class="header-back-btn" title="رجوع" style="visibility: hidden;">➔</button>
+        <h1 id="header-title" class="header-title">لعبة فاهي</h1>
+        <button id="sound-toggle" class="sound-toggle-btn" title="كتم / تشغيل الصوت" aria-label="الصوت">🔊</button>
+      </div>
+
+      <!-- مؤشر خطوات الإعداد الثلاث (1. اللهجة ➔ 2. القسم ➔ 3. الأسماء) -->
+      <div id="setup-stepper" class="setup-stepper">
+        <button type="button" class="step-pill active" data-step="dialect" id="step-btn-dialect">
+          <span class="step-num">1</span>
+          <span>اللهجة</span>
+        </button>
+        <div class="step-line"></div>
+        <button type="button" class="step-pill" data-step="categories" id="step-btn-categories">
+          <span class="step-num">2</span>
+          <span>القسم</span>
+        </button>
+        <div class="step-line"></div>
+        <button type="button" class="step-pill" data-step="players" id="step-btn-players">
+          <span class="step-num">3</span>
+          <span>الأسماء</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ====================================================================
+         الصفحة 1: صفحة اختيار اللهجة المستقلة (Dialect Selection Screen)
+         ==================================================================== -->
+    <main id="screen-dialect" class="screen active">
+      <!-- بانر الهوية الديناميكي -->
+      <div class="brand-hero">
+        <div id="brand-logo" class="brand-logo">فـاهي</div>
+        <p id="brand-tagline" class="brand-tagline">أفرز الفاهي القاعد بيناتنا وما جايب خبر! 🕵️‍♂️</p>
+      </div>
+
+      <div class="section-subtitle">اختر لهجة الجلسة ومصطلح اللعبة:</div>
+
+      <!-- بطاقات اللهجات الثلاث الكبيرة -->
+      <div class="dialect-cards-stack">
+        <div class="dialect-big-card active" data-dialect="sudanese" id="tab-dialect-sudanese">
+          <div class="dialect-card-flag">🇸🇩</div>
+          <div class="dialect-card-body">
+            <div class="dialect-card-top">
+              <span class="dialect-card-name">اللهجة السودانية</span>
+              <span class="dialect-term-badge">فاهي</span>
+            </div>
+            <p class="dialect-card-desc">نلعب بالمصطلحات والأكلات والمعالم السودانية، والزول الما عارف الموضوع بنسميهو «فاهي»!</p>
+          </div>
+          <div class="dialect-card-check">✓</div>
+        </div>
+
+        <div class="dialect-big-card" data-dialect="saudi" id="tab-dialect-saudi">
+          <div class="dialect-card-flag">🇸🇦</div>
+          <div class="dialect-card-body">
+            <div class="dialect-card-top">
+              <span class="dialect-card-name">اللهجة السعودية</span>
+              <span class="dialect-term-badge">برا السالفة</span>
+            </div>
+            <p class="dialect-card-desc">نلعب بالسوالف والأكلات والمعالم السعودية، والشخص اللي ما يدري وش الموضوع نسميه «برا السالفة»!</p>
+          </div>
+          <div class="dialect-card-check">✓</div>
+        </div>
+
+        <div class="dialect-big-card" data-dialect="egyptian" id="tab-dialect-egyptian">
+          <div class="dialect-card-flag">🇪🇬</div>
+          <div class="dialect-card-body">
+            <div class="dialect-card-top">
+              <span class="dialect-card-name">اللهجة المصرية</span>
+              <span class="dialect-term-badge">في الطراوة</span>
+            </div>
+            <p class="dialect-card-desc">نلعب بالحوارات والأكلات والمعالم المصرية، واللي مش فاهم الحوار بنسميه «في الطراوة»!</p>
+          </div>
+          <div class="dialect-card-check">✓</div>
+        </div>
+      </div>
+
+      <button id="btn-dialect-next" class="btn-primary">
+        <span id="dialect-next-btn-text">التالي: اختار قسم اللعب ➔</span>
+      </button>
+    </main>
+
+    <!-- ====================================================================
+         الصفحة 2: صفحة اختيار القسم بالأيقونات المستقلة (Categories Screen)
+         ==================================================================== -->
+    <section id="screen-categories" class="screen">
+      <div class="categories-page-intro">
+        <p id="categories-screen-sub">اضغط على أي قسم أو أكتر عشان نلعب فيهو:</p>
+      </div>
+
+      <!-- شبكة بطاقات الأقسام المصورة الكبيرة -->
+      <div id="categories-container" class="categories-poster-grid">
+        <!-- تُولد بطاقات الأيقونات الكبيرة ديناميكياً هنا -->
+      </div>
+
+      <!-- شريط المتابعة لصفحة الأسماء -->
+      <div class="categories-sticky-footer">
+        <button id="btn-categories-next" class="btn-primary">
+          <span id="categories-next-btn-text">التالي: أضف أسماء الشلة ➔</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         الصفحة 3: صفحة إضافة الأسماء والإعدادات المستقلة (Players Screen)
+         ==================================================================== -->
+    <section id="screen-players" class="screen">
+      <!-- صندوق إضافة وإدارة اللاعبين -->
+      <div class="settings-box">
+        <div class="settings-box-title">
+          <span id="players-box-title">👥 قائمة اللعيبة (3 إلى 14)</span>
+          <span id="players-box-sub" class="settings-sub-pill">التلفون بيلف عليكم واحد واحد</span>
+        </div>
+
+        <div class="add-player-row">
+          <input type="text" id="player-input" class="player-input" placeholder="أكتب اسم الزول هنا..." maxlength="15" autocomplete="off">
+          <button id="btn-add-player" class="btn-add-player" title="إضافة">+</button>
+        </div>
+
+        <div id="players-list-container" class="players-list">
+          <!-- تُولد بطاقات اللاعبين ديناميكياً هنا -->
+        </div>
+      </div>
+
+      <!-- إعدادات الجولة -->
+      <div class="settings-box">
+        <div class="options-row">
+          <label id="hint-toggle-label" for="toggle-hints" style="font-weight: 700; font-size: 0.95rem; cursor: pointer;">💡 تلميح للفاهي (يعرف اسم القسم بس)</label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggle-hints" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="options-row">
+          <label id="timer-select-label" for="timer-select" style="font-weight: 700; font-size: 0.95rem;">⏱️ زمن السؤال لكل لاعب</label>
+          <select id="timer-select" class="daylight-select">
+            <option value="20">20 ثانية لكل لاعب</option>
+            <option value="30" selected>30 ثانية لكل لاعب</option>
+            <option value="45">45 ثانية لكل لاعب</option>
+            <option value="60">60 ثانية لكل لاعب</option>
+          </select>
+        </div>
+      </div>
+
+      <button id="btn-start-game" class="btn-primary">
+        <span id="start-btn-text">🔥 يلا نبدأ القيم!</span>
+      </button>
+    </section>
+
+    <!-- ====================================================================
+         4. شاشة كشف الهوية السرية (Pass & Play Vault Reveal)
+         ==================================================================== -->
+    <section id="screen-pass" class="screen">
+      <div class="card-pass-container">
+        <div id="player-turn-badge" class="player-turn-badge">أدّي التلفون لي:</div>
+        <div id="player-turn-name" class="player-turn-name">أحمد</div>
+
+        <!-- بطاقة الكشف التفاعلية -->
+        <div id="secret-card-box" class="secret-card-box">
+          <div class="card-instruction">
+            <div class="scanner-icon">🤫</div>
+            <div id="hold-instruction-text">
+              تأكد مافي زول بعاين معاك في الشاشة!<br>
+              <strong>اضغط هنا عشان تشوف وضعك شنو</strong>
+            </div>
+          </div>
+
+          <div id="revealed-content" class="revealed-content">
+            <div id="role-title" class="role-title-citizen">أنت فاهم الموضوع!</div>
+            <div id="role-details">
+              <!-- يُحقن محتوى الدور هنا -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button id="btn-pass-next" class="btn-primary" style="display: none;">
+        <span id="next-player-btn-text">تم، حوّل للزول البعدو ➔</span>
+      </button>
+    </section>
+
+    <!-- ====================================================================
+         5. شاشة جولة الأسئلة والمؤقت لكل لاعب (Per-Player Questions & Timer)
+         ==================================================================== -->
+    <section id="screen-questions" class="screen">
+      <!-- شريط حالة تقدم الأسئلة على كل لاعب -->
+      <div class="question-turn-progress-box">
+        <div id="question-turn-counter-badge" class="question-turn-counter-badge">
+          سؤال اللاعب 1 من 4
+        </div>
+        <div id="question-players-pills" class="question-players-pills">
+          <!-- كبسولات اللاعبين وتقدم الدور -->
+        </div>
+      </div>
+
+      <div class="question-prompt-box">
+        <div id="asker-target" class="asker-target">
+          🎤 دور أحمد يسأل سارة!
+        </div>
+        <div id="suggested-question" class="suggested-question">
+          "الشي دا قاعد في كل بيت ولا نادر؟"
+        </div>
+        <div style="margin-top: 12px;">
+          <button id="btn-new-question" class="btn-secondary" style="width: 100%; font-size: 0.88rem; padding: 8px 14px;">
+            🔄 غيّر السؤال المقترح أو المستهدف
+          </button>
+        </div>
+      </div>
+
+      <div class="timer-circle-container">
+        <div id="timer-remaining-label" style="font-size: 0.95rem; font-weight: 800; color: var(--brand-indigo);">⏱️ زمن سؤال «أحمد»:</div>
+        <div id="timer-display" class="timer-number">00:30</div>
+        
+        <div class="timer-controls">
+          <button id="btn-toggle-timer" class="btn-secondary">⏸️ إيقاف</button>
+          <button id="btn-add-time" class="btn-secondary">⏱️ +15 ثانية</button>
+        </div>
+      </div>
+
+      <!-- زر الانتقال للاعب التالي في الأسئلة -->
+      <button id="btn-next-question-turn" class="btn-primary" style="margin-bottom: 10px;">
+        <span id="next-question-turn-text">تم السؤال ➔ اللاعب البعدو</span>
+      </button>
+
+      <div>
+        <button id="btn-go-to-vote" class="btn-secondary" style="width: 100%; border-color: #fecdd3; color: var(--brand-rose); background: #fff1f2;">
+          <span>🚨 تخطي الأسئلة والذهاب للتصويت فوراً!</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         6. شاشة التصويت والاتهام (Voting Grid)
+         ==================================================================== -->
+    <section id="screen-voting" class="screen">
+      <div id="voting-instructions" class="voting-instructions">
+        منو الزول اللي إجاباته ما راكبة؟<br>
+        <strong>اختاروا الزول الشاكين فيهو:</strong>
+      </div>
+
+      <div id="voting-list-container" class="voting-list">
+        <!-- تُولد شبكة التصويت ديناميكياً -->
+      </div>
+
+      <button id="btn-confirm-vote" class="btn-primary" disabled style="opacity: 0.5;">
+        <span id="confirm-vote-btn-text">تأكيد الاتهام 🎯</span>
+      </button>
+    </section>
+
+    <!-- ====================================================================
+         6.5 شاشة الترقب الدرامي وكشف الحقيقة (Suspense & Heartbeat Reveal)
+         ==================================================================== -->
+    <section id="screen-suspense" class="screen">
+      <div class="suspense-stage-card">
+        <div id="suspense-accused-banner" class="suspense-accused-banner">
+          اتفقتم على اتهام «أحمد»...
+        </div>
+
+        <!-- رادار الترقب والعد التنازلي النابض -->
+        <div id="suspense-radar-wrap" class="suspense-radar-wrap">
+          <div class="radar-ring ring-1"></div>
+          <div class="radar-ring ring-2"></div>
+          <div id="suspense-center-circle" class="suspense-center-circle">
+            <span id="suspense-countdown-num">3</span>
+          </div>
+        </div>
+
+        <!-- نص حالة الترقب المتغير -->
+        <div id="suspense-status-text" class="suspense-status-text">
+          🔍 جاري فحص بصمات الشك والمكابسة...
+        </div>
+
+        <!-- بطاقة المفاجأة بعد انتهاء العد التنازلي -->
+        <div id="suspense-verdict-box" class="suspense-verdict-box" style="display: none;">
+          <div id="suspense-verdict-title" class="suspense-verdict-title"></div>
+          <div id="suspense-verdict-sub" class="suspense-verdict-sub"></div>
+        </div>
+      </div>
+
+      <button id="btn-suspense-continue" class="btn-primary" style="display: none;">
+        <span id="suspense-continue-text">متابعة ➔</span>
+      </button>
+    </section>
+
+    <!-- ====================================================================
+         7. شاشة تخمين الكلمة السرية (Impostor Final Guess)
+         ==================================================================== -->
+    <section id="screen-guess" class="screen">
+      <div id="accused-name-header" class="voting-instructions">
+        عندك فرصة أخيرة لتخمين الكلمة السرية:
+      </div>
+
+      <div id="guess-options-list" class="guess-options-list">
+        <!-- تُولد الـ 7 خيارات في شبكة Bento عصرية -->
+      </div>
+
+      <button id="btn-confirm-guess" class="btn-primary" disabled style="opacity: 0.5;">
+        <span id="confirm-guess-btn-text">أراهن على الكلمة دي! 🚀</span>
+      </button>
+    </section>
+
+    <!-- ====================================================================
+         8. شاشة النتائج وتوزيع النقاط (Results & Scoreboard)
+         ==================================================================== -->
+    <section id="screen-results" class="screen">
+      <div class="results-card">
+        <div id="result-verdict" class="result-verdict">النتيجة! 🏆</div>
+        <div id="result-explanation">
+          <!-- تفاصيل الجولة -->
+        </div>
+
+        <div style="margin-top: 20px; text-align: right;">
+          <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--brand-indigo); margin-bottom: 6px;">
+            🏅 ترتيب النقاط:
+          </h3>
+          <table class="scoreboard-table">
+            <thead>
+              <tr>
+                <th>اللاعب</th>
+                <th>النقاط</th>
+              </tr>
+            </thead>
+            <tbody id="scoreboard-body">
+              <!-- أسطر النقاط -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px; margin-top: auto;">
+        <button id="btn-play-again" class="btn-primary">
+          <span id="play-again-btn-text">🔄 قيم جديد بنفس الشلة!</span>
+        </button>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <button id="btn-change-categories" class="btn-secondary" style="text-align: center; padding: 12px;">
+            📂 تغيير القسم
+          </button>
+          <button id="btn-back-to-setup" class="btn-secondary" style="text-align: center; padding: 12px;">
+            ⚙️ اللهجة واللعيبة
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- سكربتات اللعبة -->
+  <script src="dialects.js"></script>
+  <script src="words.js"></script>
+  <script src="game.js"></script>
+
+  <!-- تسجيل الـ Service Worker لدعم وضع عدم الاتصال (Offline PWA) -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('PWA Service Worker Registered', reg))
+          .catch(err => console.log('PWA SW failed', err));
+      });
+    }
+  </script>
+</body>
+</html>

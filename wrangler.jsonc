@@ -1,0 +1,11 @@
+{
+  "name": "fahey-game",
+  "compatibility_date": "2026-10-21",
+  "observability": {
+    "enabled": true
+  },
+  "assets": {
+    "directory": "./",
+    "not_found_handling": "single-page-application"
+  }
+}

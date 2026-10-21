@@ -1,0 +1,7 @@
+wrangler.jsonc
+.gitignore
+.git
+.wrangler
+README.md
+*.bat
+WhatsApp*

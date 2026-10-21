@@ -1,0 +1,19 @@
+{
+  "name": "لعبة فاهي - مين اللي برا السالفة؟",
+  "short_name": "فاهي",
+  "description": "لعبة الذكاء والتخمين الاجتماعي مستنسخة من لعبة برا السالفة",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#0d9488",
+  "orientation": "portrait",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "2.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
