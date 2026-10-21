@@ -48,15 +48,15 @@ const GAME_DIALECTS = {
     hintPrefix: "💡 تلميح ليك: الموضوع عن",
     nextPlayerBtn: "تم، حوّل للزول البعدو ➔",
 
-    // 5. الأسئلة والمؤقت لكل لاعب
+    // 5. الأسئلة والمؤقت لكل لاعب (جولتان لكل لاعب، سؤالان فريدان حسب الموضوع بلا تكرار)
     questionsHeader: "فقرة الأسئلة والمكابسة!",
-    questionTurnCounter: (current, total) => `سؤال اللاعب ${current} من ${total}`,
-    whoAsksWho: (p1, p2) => `🎤 دور <strong>${p1}</strong> يسأل <strong>${p2}</strong>!`,
-    btnNextQuestionTurn: "تم السؤال ➔ اللاعب البعدو",
-    btnNewQuestion: "🔄 غيّر السؤال المقترح أو المستهدف",
+    questionTurnCounter: (current, total, roundNum) => `الجولة (${roundNum} من 2) • السؤال ${current} من ${total}`,
+    whoAsksWho: (p1, p2, roundNum) => `🎤 دور <strong>${p1}</strong> يسأل <strong>${p2}</strong> <span style="font-size: 0.85rem; color: var(--brand-teal);">(${roundNum === 1 ? "السؤال الأول" : "السؤال الثاني"})</span>!`,
+    btnNextQuestionTurn: "تم السؤال ➔ الدور البعدو",
+    btnNewQuestion: "🔄 سؤال تاني من نفس الموضوع أو غيّر المستهدف",
     timerRemainingLabel: (name) => `⏱️ زمن سؤال «${name}»:`,
     readyToVoteBtn: "🚨 تخطي الأسئلة والذهاب للتصويت فوراً!",
-    allTurnsCompletedAlert: "كل اللعيبة سألوا بعض! أها، جاهزين تطلعوا الفاهي؟ يلا نصوّت!",
+    allTurnsCompletedAlert: "انتهت الجولتين وكل لاعب سأل مرتين! أها، جاهزين تطلعوا الفاهي؟ يلا نصوّت!",
     suggestedQuestions: [
       "الشي دا قاعد في كل بيت سوداني ولا نادر؟",
       "لو لاقاك الصباح بدري، شعورك بيكون شنو؟",
@@ -163,15 +163,15 @@ const GAME_DIALECTS = {
     hintPrefix: "💡 تلميح: الموضوع عن",
     nextPlayerBtn: "تم، مرر الجوال للي بعده ➔",
 
-    // 5. الأسئلة والمؤقت لكل لاعب
+    // 5. الأسئلة والمؤقت لكل لاعب (جولتان لكل لاعب، سؤالان فريدان حسب الموضوع بلا تكرار)
     questionsHeader: "جولة الأسئلة والتحقيق!",
-    questionTurnCounter: (current, total) => `سؤال اللاعب ${current} من ${total}`,
-    whoAsksWho: (p1, p2) => `🎤 دور <strong>${p1}</strong> يسأل <strong>${p2}</strong>!`,
-    btnNextQuestionTurn: "تم السؤال ➔ اللاعب اللي بعده",
-    btnNewQuestion: "🔄 تغيير السؤال المقترح أو المستهدف",
+    questionTurnCounter: (current, total, roundNum) => `الجولة (${roundNum} من 2) • السؤال ${current} من ${total}`,
+    whoAsksWho: (p1, p2, roundNum) => `🎤 دور <strong>${p1}</strong> يسأل <strong>${p2}</strong> <span style="font-size: 0.85rem; color: var(--brand-teal);">(${roundNum === 1 ? "السؤال الأول" : "السؤال الثاني"})</span>!`,
+    btnNextQuestionTurn: "تم السؤال ➔ الدور اللي بعده",
+    btnNewQuestion: "🔄 سؤال ثاني من نفس الموضوع أو غيّر المستهدف",
     timerRemainingLabel: (name) => `⏱️ وقت سؤال «${name}»:`,
     readyToVoteBtn: "🚨 تخطي الأسئلة وبدء التصويت فوراً!",
-    allTurnsCompletedAlert: "انتهت أسئلة جميع اللاعبين! الحين وقت التصويت وكشف الفاهي!",
+    allTurnsCompletedAlert: "انتهت الجولتين وكل لاعب سأل مرتين! الحين وقت التصويت وكشف الفاهي!",
     suggestedQuestions: [
       "هل الشيء ذا موجود في كل بيت ولا نادر؟",
       "لو شفته الصباح، وش بتكون ردة فعلك؟",
@@ -278,15 +278,15 @@ const GAME_DIALECTS = {
     hintPrefix: "💡 تلميح: الحوار عن",
     nextPlayerBtn: "تمام، باصي الموبايل للي بعده ➔",
 
-    // 5. الأسئلة والمؤقت لكل لاعب
+    // 5. الأسئلة والمؤقت لكل لاعب (جولتان لكل لاعب، سؤالان فريدان حسب الموضوع بلا تكرار)
     questionsHeader: "فقرة الأسئلة والاستجواب!",
-    questionTurnCounter: (current, total) => `سؤال اللاعب ${current} من ${total}`,
-    whoAsksWho: (p1, p2) => `🎤 دور <strong>${p1}</strong> يسأل <strong>${p2}</strong>!`,
-    btnNextQuestionTurn: "خلص سؤاله ➔ اللي بعده",
-    btnNewQuestion: "🔄 غير السؤال المقترح أو المستهدف",
+    questionTurnCounter: (current, total, roundNum) => `الجولة (${roundNum} من 2) • السؤال ${current} من ${total}`,
+    whoAsksWho: (p1, p2, roundNum) => `🎤 دور <strong>${p1}</strong> يسأل <strong>${p2}</strong> <span style="font-size: 0.85rem; color: var(--brand-teal);">(${roundNum === 1 ? "السؤال الأول" : "السؤال التاني"})</span>!`,
+    btnNextQuestionTurn: "خلص سؤاله ➔ الدور اللي بعده",
+    btnNewQuestion: "🔄 سؤال تاني من نفس الموضوع أو غيّر المستهدف",
     timerRemainingLabel: (name) => `⏱️ وقت سؤال «${name}»:`,
     readyToVoteBtn: "🚨 تخطي الأسئلة ويلا نصوت فوراً!",
-    allTurnsCompletedAlert: "كل اللاعيبة سألوا بعض! يلا نصوت ونشوف مين الفاهي اللي وسطينا!",
+    allTurnsCompletedAlert: "خلصت الجولتين وكل لاعب سأل مرتين! يلا نصوت ونشوف مين الفاهي اللي وسطينا!",
     suggestedQuestions: [
       "الحاجة دي موجودة في كل بيت مصري ولا نادرة؟",
       "لو شفتها الصبح بدري، رد فعلك هيكون إيه؟",

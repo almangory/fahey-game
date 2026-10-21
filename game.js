@@ -213,6 +213,8 @@ class FaheyGame {
     this.questionOrder = [];
     this.questionTurnIndex = 0;
     this.currentTargetPlayer = null;
+    this.unusedQuestionsPool = [];
+    this.questionPoolCursor = 0;
 
     this.timerRemaining = 30;
     this.timerInterval = null;
@@ -850,11 +852,69 @@ class FaheyGame {
     }
   }
 
-  // --- 5. فقرة الأسئلة والمؤقت المستقل لكل لاعب ---
+  // --- 5. فقرة الأسئلة والمؤقت المستقل لكل لاعب (سؤالان لكل لاعب، مخصصة للموضوع بدون أي تكرار) ---
+  drawNextUniqueQuestion() {
+    if (!this.unusedQuestionsPool || this.unusedQuestionsPool.length === 0) {
+      const d = this.dialect;
+      return d.suggestedQuestions[0] || "اشرح لينا علاقتك بالحاجة دي من غير ما تذكر اسمها؟";
+    }
+    if (this.questionPoolCursor >= this.unusedQuestionsPool.length) {
+      // في حال استهلك اللاعبون كل الأسئلة (أكثر من 40 تبديل)، نعيد خلط القائمة
+      this.unusedQuestionsPool = this.shuffleArray([...this.unusedQuestionsPool]);
+      this.questionPoolCursor = 0;
+    }
+    const q = this.unusedQuestionsPool[this.questionPoolCursor];
+    this.questionPoolCursor++;
+    return q;
+  }
+
   startQuestionsPhase() {
     this.showScreen("questions");
-    // ترتيب اللاعبين في الأسئلة (يمر العداد على كل لاعب واحداً تلو الآخر)
-    this.questionOrder = [...this.players];
+
+    // 1. جلب بنك الأسئلة المخصص لموضوع الجولة الحالي ولهجة اللعب (أكثر من 35 سؤالاً متخصصاً لكل موضوع)
+    const categoryId = this.currentCategory ? this.currentCategory.id : "foods";
+    const rawCategoryQuestions = typeof getQuestionsForCategoryAndDialect === "function"
+      ? getQuestionsForCategoryAndDialect(categoryId, this.currentDialectId)
+      : [...this.dialect.suggestedQuestions];
+
+    // خلط الأسئلة عشوائياً (Fisher-Yates) لضمان عدم تكرار أي سؤال بين اللاعبين نهائياً
+    this.unusedQuestionsPool = this.shuffleArray([...rawCategoryQuestions]);
+    this.questionPoolCursor = 0;
+
+    // 2. تجهيز جدول الأسئلة على جولتين (مرتين لكل لاعب مضاف: السؤال الأول + السؤال الثاني)
+    // في كل جولة يسأل اللاعب طرفاً ثانياً مختلفاً مع سؤال مخصص محضّر له مسبقاً
+    this.questionOrder = [];
+    const numPlayers = this.players.length;
+
+    // ترتيب عشوائي للمستهدفين في الجولة الأولى والجولة الثانية بحيث يسأل كل لاعب شخصين مختلفين
+    for (let roundNum = 1; roundNum <= 2; roundNum++) {
+      this.players.forEach((asker, idx) => {
+        const otherPlayers = this.players.filter(p => p.id !== asker.id);
+        let targetPlayer = otherPlayers[0];
+
+        if (otherPlayers.length > 0) {
+          if (roundNum === 1) {
+            // في الجولة الأولى يسأل اللاعب الذي يليه أو طرفاً عشوائياً
+            const shiftIdx = idx % otherPlayers.length;
+            targetPlayer = otherPlayers[shiftIdx];
+          } else {
+            // في الجولة الثانية نضمن اختيار طرف ثانٍ مختلف عن الجولة الأولى (إن كان عدد اللاعبين 3 فأكثر)
+            const round1Turn = this.questionOrder.find(t => t.asker.id === asker.id && t.roundNum === 1);
+            const candidates = otherPlayers.filter(p => !round1Turn || p.id !== round1Turn.target.id);
+            const pool = candidates.length > 0 ? candidates : otherPlayers;
+            targetPlayer = pool[(idx + 1) % pool.length];
+          }
+        }
+
+        this.questionOrder.push({
+          asker: asker,
+          target: targetPlayer,
+          roundNum: roundNum,
+          question: this.drawNextUniqueQuestion()
+        });
+      });
+    }
+
     this.questionTurnIndex = 0;
     this.setupPlayerQuestionTurn();
   }
@@ -862,42 +922,55 @@ class FaheyGame {
   setupPlayerQuestionTurn() {
     clearInterval(this.timerInterval);
     const d = this.dialect;
-    const totalPlayers = this.questionOrder.length;
-    const currentAsker = this.questionOrder[this.questionTurnIndex];
+    const totalTurns = this.questionOrder.length;
+    const currentTurn = this.questionOrder[this.questionTurnIndex];
+    const currentAsker = currentTurn.asker;
+    this.currentTargetPlayer = currentTurn.target;
 
-    // اختيار لاعب مستهدف للسؤال (غير السائل الحالي)
-    const otherPlayers = this.players.filter(p => p.id !== currentAsker.id);
-    this.currentTargetPlayer = otherPlayers[Math.floor(Math.random() * otherPlayers.length)];
-
-    // تحديث عداد تقدم الأسئلة (سؤال اللاعب X من Y)
+    // تحديث عداد تقدم الأسئلة (الجولة 1 أو 2 من 2 • السؤال X من Y)
     if (this.questionTurnCounterBadgeEl && typeof d.questionTurnCounter === "function") {
-      this.questionTurnCounterBadgeEl.textContent = d.questionTurnCounter(this.questionTurnIndex + 1, totalPlayers);
+      this.questionTurnCounterBadgeEl.textContent = d.questionTurnCounter(
+        this.questionTurnIndex + 1,
+        totalTurns,
+        currentTurn.roundNum
+      );
     }
 
-    // تحديث كبسولات اللاعبين (من انتهى ✓، ومن دوره الآن 🎤، ومن ينتظر)
+    // تحديث كبسولات اللاعبين مع إظهار تقدم كل لاعب في السؤالين (1/2، 2/2، ✓✓)
     if (this.questionPlayersPillsEl) {
       this.questionPlayersPillsEl.innerHTML = "";
-      this.questionOrder.forEach((p, idx) => {
+      this.players.forEach((p) => {
+        // حساب كم سؤالاً أنجزه هذا اللاعب حتى الآن
+        const completedCount = this.questionOrder
+          .slice(0, this.questionTurnIndex)
+          .filter(t => t.asker.id === p.id).length;
+        const isCurrentAsker = currentAsker.id === p.id;
+
         const pill = document.createElement("div");
-        if (idx < this.questionTurnIndex) {
+        if (completedCount >= 2) {
           pill.className = "q-player-pill done";
-          pill.innerHTML = `<span>✓</span><span>${p.name}</span>`;
-        } else if (idx === this.questionTurnIndex) {
+          pill.innerHTML = `<span>✓✓</span><span>${p.name} (2/2)</span>`;
+        } else if (isCurrentAsker) {
           pill.className = "q-player-pill active";
-          pill.innerHTML = `<span>🎤</span><span>${p.name}</span>`;
+          pill.innerHTML = `<span>🎤</span><span>${p.name} (${currentTurn.roundNum}/2)</span>`;
+        } else if (completedCount === 1) {
+          pill.className = "q-player-pill";
+          pill.innerHTML = `<span>✓⏳</span><span>${p.name} (1/2)</span>`;
         } else {
           pill.className = "q-player-pill";
-          pill.innerHTML = `<span>⏳</span><span>${p.name}</span>`;
+          pill.innerHTML = `<span>⏳</span><span>${p.name} (0/2)</span>`;
         }
         this.questionPlayersPillsEl.appendChild(pill);
       });
     }
 
-    // تحديث نص من يسأل من + السؤال المقترح
-    const questions = d.suggestedQuestions;
-    const sampleQ = questions[Math.floor(Math.random() * questions.length)];
-    this.askerTargetEl.innerHTML = d.whoAsksWho(currentAsker.name, this.currentTargetPlayer.name);
-    this.suggestedQuestionEl.textContent = `💡 "${sampleQ}"`;
+    // تحديث نص من يسأل من + السؤال المحضّر الخاص بهذا اللاعب والمرتبط بموضوع الكلمة
+    this.askerTargetEl.innerHTML = d.whoAsksWho(
+      currentAsker.name,
+      this.currentTargetPlayer.name,
+      currentTurn.roundNum
+    );
+    this.suggestedQuestionEl.textContent = `💡 "${currentTurn.question}"`;
 
     // تحديث عنوان العداد باسم اللاعب الحالي
     if (this.timerRemainingLabelEl) {
@@ -906,13 +979,13 @@ class FaheyGame {
         : d.timerRemainingLabel;
     }
 
-    // تحديث نص زر الانتقال للاعب التالي أو التصويت إذا كان اللاعب الأخير
+    // تحديث نص زر الانتقال للسؤال التالي أو التصويت إذا كان السؤال الأخير
     if (this.nextQuestionTurnTextEl) {
-      if (this.questionTurnIndex === totalPlayers - 1) {
+      if (this.questionTurnIndex === totalTurns - 1) {
         this.nextQuestionTurnTextEl.textContent = "إنهاء الأسئلة والذهاب للتصويت 🚨";
       } else {
-        const nextPlayerName = this.questionOrder[this.questionTurnIndex + 1].name;
-        this.nextQuestionTurnTextEl.textContent = `${d.btnNextQuestionTurn} (${nextPlayerName})`;
+        const nextTurn = this.questionOrder[this.questionTurnIndex + 1];
+        this.nextQuestionTurnTextEl.textContent = `${d.btnNextQuestionTurn} (${nextTurn.asker.name} - ج${nextTurn.roundNum})`;
       }
     }
 
@@ -923,12 +996,13 @@ class FaheyGame {
   }
 
   changeSuggestedQuestionOrTarget() {
-    if (this.players.length < 2) return;
+    if (this.players.length < 2 || !this.questionOrder.length) return;
     const d = this.dialect;
-    const currentAsker = this.questionOrder[this.questionTurnIndex];
+    const currentTurn = this.questionOrder[this.questionTurnIndex];
+    const currentAsker = currentTurn.asker;
     const otherPlayers = this.players.filter(p => p.id !== currentAsker.id);
 
-    // اختيار مستهدف آخر إن وُجد
+    // اختيار طرف مستهدف آخر إن وُجد
     if (otherPlayers.length > 1 && this.currentTargetPlayer) {
       const differentTargets = otherPlayers.filter(p => p.id !== this.currentTargetPlayer.id);
       this.currentTargetPlayer = differentTargets[Math.floor(Math.random() * differentTargets.length)];
@@ -936,11 +1010,17 @@ class FaheyGame {
       this.currentTargetPlayer = otherPlayers[0];
     }
 
-    const questions = d.suggestedQuestions;
-    const sampleQ = questions[Math.floor(Math.random() * questions.length)];
+    // سحب سؤال جديد فريد من بنك أسئلة الموضوع الحالي لم يُعرض لأي لاعب من قبل
+    const newUniqueQ = this.drawNextUniqueQuestion();
+    currentTurn.target = this.currentTargetPlayer;
+    currentTurn.question = newUniqueQ;
 
-    this.askerTargetEl.innerHTML = d.whoAsksWho(currentAsker.name, this.currentTargetPlayer.name);
-    this.suggestedQuestionEl.textContent = `💡 "${sampleQ}"`;
+    this.askerTargetEl.innerHTML = d.whoAsksWho(
+      currentAsker.name,
+      this.currentTargetPlayer.name,
+      currentTurn.roundNum
+    );
+    this.suggestedQuestionEl.textContent = `💡 "${newUniqueQ}"`;
     this.sfx.playPop();
   }
 

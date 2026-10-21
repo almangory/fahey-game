@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fahey-game-v11';
+const CACHE_NAME = 'fahey-game-v12';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
