@@ -68,16 +68,16 @@ const GAME_DIALECTS = {
       "لونه شنو في الغالب؟"
     ],
 
-    // 6. التصويت الفردي ونتيجة الفرز
+    // 6. التصويت الفردي ونتيجة الفرز (الكل يصوت، حتى الفاهي!)
     votingHeader: "منو الفاهي بيناتنا؟",
-    voteTurnCounter: (current, total) => `تصويت اللاعب ${current} من ${total}`,
-    voterPrompt: (voterName) => `🗳️ دور <strong>«${voterName}»</strong> يصوّت!<br><strong>اختار الزول الشاكي إنو هو الفاهي:</strong>`,
-    btnConfirmPlayerVote: (nextName) => nextName ? `تأكيد صوتي ➔ دور (${nextName})` : `تأكيد صوتي وعرض نتيجة التصويت 📊`,
+    voteTurnCounter: (current, total) => `تصويت اللاعب ${current} من ${total} (الكل يصوّت حتى الفاهي 🕵️‍♂️)`,
+    voterPrompt: (voterName) => `🗳️ أدي التلفون لي <strong>«${voterName}»</strong> عشان يصوّت!<br><span style="font-size: 0.88rem; color: var(--text-muted);">(حتى لو أنت الفاهي صوّت على زول تاني عشان تزوغ وتموّه!)</span><br><strong>اختار الزول الشاكي إنو هو الفاهي:</strong>`,
+    btnConfirmPlayerVote: (nextName) => nextName ? `تأكيد صوتي ➔ أدي التلفون لي (${nextName})` : `تأكيد صوتي وعرض نتيجة التصويت 📊`,
     voteTallyHeader: "📊 نتيجة فرز الأصوات!",
     voteTallySub: (accusedName, count) => `أغلبية الأصوات اتهمت <strong>«${accusedName}»</strong> بـ (${count} ${count === 1 ? "صوت" : "أصوات"})!`,
     voteLogTitle: "🗳️ تفاصيل الأصوات (منو صوّت على منو):",
     voteCountLabel: (count) => `${count} ${count === 1 ? "صوت" : "أصوات"}`,
-    btnRevealAccused: (accusedName) => `🥁 اكشف حقيقة «${accusedName}» هسع!`,
+    btnRevealAccused: (accusedName) => `🥁 اكشف حقيقة «${accusedName}» ومنو خمن صاح!`,
     votingInstruction: "منو الزول اللي إجاباته ما راكبة وفاهي ما عارف الموضوع؟<br><strong>اختاروا الزول الشاكين فيهو:</strong>",
     btnConfirmVote: "تأكيد الاتهام 🎯",
 
@@ -183,11 +183,11 @@ const GAME_DIALECTS = {
       "وش لونه بالعاده؟"
     ],
 
-    // 6. التصويت الفردي ونتيجة الفرز
+    // 6. التصويت الفردي ونتيجة الفرز (الكل يصوت، حتى الفاهي!)
     votingHeader: "مين الفاهي اللي بيننا؟",
-    voteTurnCounter: (current, total) => `تصويت اللاعب ${current} من ${total}`,
-    voterPrompt: (voterName) => `🗳️ دور <strong>«${voterName}»</strong> يصوّت!<br><strong>اختر اللاعب اللي تشك إنه الفاهي:</strong>`,
-    btnConfirmPlayerVote: (nextName) => nextName ? `تأكيد صوتي ➔ دور (${nextName})` : `تأكيد صوتي وعرض نتيجة التصويت 📊`,
+    voteTurnCounter: (current, total) => `تصويت اللاعب ${current} من ${total} (الكل يصوّت حتى الفاهي 🕵️‍♂️)`,
+    voterPrompt: (voterName) => `🗳️ أعطِ الجوال لـ <strong>«${voterName}»</strong> عشان يصوّت!<br><span style="font-size: 0.88rem; color: var(--text-muted);">(حتى لو أنت الفاهي صوّت على شخص ثاني للتمويه!)</span><br><strong>اختر اللاعب اللي تشك إنه الفاهي:</strong>`,
+    btnConfirmPlayerVote: (nextName) => nextName ? `تأكيد صوتي ➔ أعطِ الجوال لـ (${nextName})` : `تأكيد صوتي وعرض نتيجة التصويت 📊`,
     voteTallyHeader: "📊 نتيجة فرز الأصوات!",
     voteTallySub: (accusedName, count) => `أغلبية الأصوات اتهمت <strong>«${accusedName}»</strong> بـ (${count} ${count === 1 ? "صوت" : "أصوات"})!`,
     voteLogTitle: "🗳️ تفاصيل الأصوات (مين صوّت على مين):",
@@ -298,11 +298,11 @@ const GAME_DIALECTS = {
       "لونها إيه في العادة؟"
     ],
 
-    // 6. التصويت الفردي ونتيجة الفرز
+    // 6. التصويت الفردي ونتيجة الفرز (الكل يصوت، حتى الفاهي!)
     votingHeader: "مين الفاهي اللي وسطينا؟",
-    voteTurnCounter: (current, total) => `تصويت اللاعب ${current} من ${total}`,
-    voterPrompt: (voterName) => `🗳️ دور <strong>«${voterName}»</strong> يصوّت!<br><strong>اختار اللاعب اللي شاكك إنه الفاهي:</strong>`,
-    btnConfirmPlayerVote: (nextName) => nextName ? `تأكيد صوتي ➔ دور (${nextName})` : `تأكيد صوتي وعرض نتيجة التصويت 📊`,
+    voteTurnCounter: (current, total) => `تصويت اللاعب ${current} من ${total} (الكل يصوّت حتى الفاهي 🕵️‍♂️)`,
+    voterPrompt: (voterName) => `🗳️ ادي الموبايل لـ <strong>«${voterName}»</strong> علشان يصوّت!<br><span style="font-size: 0.88rem; color: var(--text-muted);">(حتى لو أنت الفاهي صوّت على حد تاني علشان تشتغلهم وتموّه!)</span><br><strong>اختار اللاعب اللي شاكك إنه الفاهي:</strong>`,
+    btnConfirmPlayerVote: (nextName) => nextName ? `تأكيد صوتي ➔ ادي الموبايل لـ (${nextName})` : `تأكيد صوتي وعرض نتيجة التصويت 📊`,
     voteTallyHeader: "📊 نتيجة فرز الأصوات!",
     voteTallySub: (accusedName, count) => `أغلبية الأصوات اتهمت <strong>«${accusedName}»</strong> بـ (${count} ${count === 1 ? "صوت" : "أصوات"})!`,
     voteLogTitle: "🗳️ تفاصيل الأصوات (مين صوّت على مين):",
