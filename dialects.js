@@ -68,8 +68,16 @@ const GAME_DIALECTS = {
       "لونه شنو في الغالب؟"
     ],
 
-    // 6. التصويت
+    // 6. التصويت الفردي ونتيجة الفرز
     votingHeader: "منو الفاهي بيناتنا؟",
+    voteTurnCounter: (current, total) => `تصويت اللاعب ${current} من ${total}`,
+    voterPrompt: (voterName) => `🗳️ دور <strong>«${voterName}»</strong> يصوّت!<br><strong>اختار الزول الشاكي إنو هو الفاهي:</strong>`,
+    btnConfirmPlayerVote: (nextName) => nextName ? `تأكيد صوتي ➔ دور (${nextName})` : `تأكيد صوتي وعرض نتيجة التصويت 📊`,
+    voteTallyHeader: "📊 نتيجة فرز الأصوات!",
+    voteTallySub: (accusedName, count) => `أغلبية الأصوات اتهمت <strong>«${accusedName}»</strong> بـ (${count} ${count === 1 ? "صوت" : "أصوات"})!`,
+    voteLogTitle: "🗳️ تفاصيل الأصوات (منو صوّت على منو):",
+    voteCountLabel: (count) => `${count} ${count === 1 ? "صوت" : "أصوات"}`,
+    btnRevealAccused: (accusedName) => `🥁 اكشف حقيقة «${accusedName}» هسع!`,
     votingInstruction: "منو الزول اللي إجاباته ما راكبة وفاهي ما عارف الموضوع؟<br><strong>اختاروا الزول الشاكين فيهو:</strong>",
     btnConfirmVote: "تأكيد الاتهام 🎯",
 
@@ -175,8 +183,16 @@ const GAME_DIALECTS = {
       "وش لونه بالعاده؟"
     ],
 
-    // 6. التصويت
+    // 6. التصويت الفردي ونتيجة الفرز
     votingHeader: "مين الفاهي اللي بيننا؟",
+    voteTurnCounter: (current, total) => `تصويت اللاعب ${current} من ${total}`,
+    voterPrompt: (voterName) => `🗳️ دور <strong>«${voterName}»</strong> يصوّت!<br><strong>اختر اللاعب اللي تشك إنه الفاهي:</strong>`,
+    btnConfirmPlayerVote: (nextName) => nextName ? `تأكيد صوتي ➔ دور (${nextName})` : `تأكيد صوتي وعرض نتيجة التصويت 📊`,
+    voteTallyHeader: "📊 نتيجة فرز الأصوات!",
+    voteTallySub: (accusedName, count) => `أغلبية الأصوات اتهمت <strong>«${accusedName}»</strong> بـ (${count} ${count === 1 ? "صوت" : "أصوات"})!`,
+    voteLogTitle: "🗳️ تفاصيل الأصوات (مين صوّت على مين):",
+    voteCountLabel: (count) => `${count} ${count === 1 ? "صوت" : "أصوات"}`,
+    btnRevealAccused: (accusedName) => `🥁 اكشف حقيقة «${accusedName}» الحين!`,
     votingInstruction: "مين اللي إجاباته مشكوك فيها وواضح إنه فاهي؟<br><strong>صوتوا على المشتبه به:</strong>",
     btnConfirmVote: "تأكيد التصويت 🎯",
 
@@ -282,8 +298,16 @@ const GAME_DIALECTS = {
       "لونها إيه في العادة؟"
     ],
 
-    // 6. التصويت
+    // 6. التصويت الفردي ونتيجة الفرز
     votingHeader: "مين الفاهي اللي وسطينا؟",
+    voteTurnCounter: (current, total) => `تصويت اللاعب ${current} من ${total}`,
+    voterPrompt: (voterName) => `🗳️ دور <strong>«${voterName}»</strong> يصوّت!<br><strong>اختار اللاعب اللي شاكك إنه الفاهي:</strong>`,
+    btnConfirmPlayerVote: (nextName) => nextName ? `تأكيد صوتي ➔ دور (${nextName})` : `تأكيد صوتي وعرض نتيجة التصويت 📊`,
+    voteTallyHeader: "📊 نتيجة فرز الأصوات!",
+    voteTallySub: (accusedName, count) => `أغلبية الأصوات اتهمت <strong>«${accusedName}»</strong> بـ (${count} ${count === 1 ? "صوت" : "أصوات"})!`,
+    voteLogTitle: "🗳️ تفاصيل الأصوات (مين صوّت على مين):",
+    voteCountLabel: (count) => `${count} ${count === 1 ? "صوت" : "أصوات"}`,
+    btnRevealAccused: (accusedName) => `🥁 اكشف حقيقة «${accusedName}» دلوقتي!`,
     votingInstruction: "مين اللي ردوده عجيبة وباين عليه فاهي؟<br><strong>صوتوا على المتهم:</strong>",
     btnConfirmVote: "تأكيد التصويت 🎯",
 

@@ -254,21 +254,63 @@
     </section>
 
     <!-- ====================================================================
-         6. شاشة التصويت والاتهام (Voting Grid)
+         6. شاشة التصويت الفردي لكل لاعب + فرز الأصوات (Per-Player Voting & Tally)
          ==================================================================== -->
     <section id="screen-voting" class="screen">
-      <div id="voting-instructions" class="voting-instructions">
-        منو الزول اللي إجاباته ما راكبة؟<br>
-        <strong>اختاروا الزول الشاكين فيهو:</strong>
+      <!-- شريط حالة تقدم التصويت على كل لاعب -->
+      <div id="voting-turn-progress-box" class="question-turn-progress-box">
+        <div id="voting-turn-counter-badge" class="question-turn-counter-badge">
+          تصويت اللاعب 1 من 4
+        </div>
+        <div id="voting-players-pills" class="question-players-pills">
+          <!-- كبسولات اللاعبين وتقدم التصويت -->
+        </div>
       </div>
 
-      <div id="voting-list-container" class="voting-list">
-        <!-- تُولد شبكة التصويت ديناميكياً -->
+      <!-- صندوق اختيار المتهم للاعب الحالي -->
+      <div id="voting-active-stage">
+        <div id="voting-instructions" class="voting-instructions">
+          منو الزول اللي إجاباته ما راكبة؟<br>
+          <strong>اختار الزول الشاكي فيهو:</strong>
+        </div>
+
+        <div id="voting-list-container" class="voting-list">
+          <!-- تُولد شبكة التصويت ديناميكياً (بدون اسم المصوت نفسه) -->
+        </div>
+
+        <button id="btn-confirm-vote" class="btn-primary" disabled style="opacity: 0.5;">
+          <span id="confirm-vote-btn-text">تأكيد صوتي ➔ اللاعب البعدو</span>
+        </button>
       </div>
 
-      <button id="btn-confirm-vote" class="btn-primary" disabled style="opacity: 0.5;">
-        <span id="confirm-vote-btn-text">تأكيد الاتهام 🎯</span>
-      </button>
+      <!-- لوحة نتيجة فرز الأصوات التفصيلية بعد تصويت الجميع -->
+      <div id="voting-results-stage" class="voting-results-stage" style="display: none;">
+        <div class="results-card" style="margin-bottom: 14px;">
+          <div id="vote-tally-header" class="result-verdict" style="font-size: 1.3rem;">
+            📊 نتيجة فرز الأصوات!
+          </div>
+          <p id="vote-tally-sub" style="font-size: 0.92rem; color: var(--text-secondary); font-weight: 700; margin-bottom: 14px;">
+            شوف كل زول صوّت على منو ومنو أخد أعلى أصوات الاتهام:
+          </p>
+
+          <!-- أشرطة عدد الأصوات لكل متهم -->
+          <div id="vote-bars-container" class="vote-bars-container">
+            <!-- تُولد أشرطة الأصوات ديناميكياً -->
+          </div>
+
+          <!-- سجل من صوّت على من -->
+          <div class="vote-log-box">
+            <div id="vote-log-title" class="vote-log-title">🗳️ تفاصيل الأصوات (منو صوّت على منو):</div>
+            <div id="vote-log-list" class="vote-log-list">
+              <!-- قائمة (أحمد ⬅️ سارة) -->
+            </div>
+          </div>
+        </div>
+
+        <button id="btn-reveal-accused" class="btn-primary">
+          <span id="reveal-accused-btn-text">🥁 اكشف حقيقة المتهم الآن!</span>
+        </button>
+      </div>
     </section>
 
     <!-- ====================================================================

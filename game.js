@@ -219,6 +219,10 @@ class FaheyGame {
     this.timerIsRunning = false;
 
     this.selectedAccusedPlayerId = null;
+    this.votingOrder = [];
+    this.votingTurnIndex = 0;
+    this.currentVoterChoiceId = null;
+    this.playerVotes = [];
     this.guessChoices = [];
     this.selectedGuessWord = null;
 
@@ -309,11 +313,23 @@ class FaheyGame {
     this.nextQuestionTurnTextEl = document.getElementById("next-question-turn-text");
     this.btnGoToVote = document.getElementById("btn-go-to-vote");
 
-    // عناصر شاشة التصويت
+    // عناصر شاشة التصويت الفردي ونتيجة الفرز
+    this.votingTurnProgressBoxEl = document.getElementById("voting-turn-progress-box");
+    this.votingTurnCounterBadgeEl = document.getElementById("voting-turn-counter-badge");
+    this.votingPlayersPillsEl = document.getElementById("voting-players-pills");
+    this.votingActiveStageEl = document.getElementById("voting-active-stage");
     this.votingInstructionsEl = document.getElementById("voting-instructions");
     this.votingListContainer = document.getElementById("voting-list-container");
     this.btnConfirmVote = document.getElementById("btn-confirm-vote");
     this.confirmVoteBtnTextEl = document.getElementById("confirm-vote-btn-text");
+    this.votingResultsStageEl = document.getElementById("voting-results-stage");
+    this.voteTallyHeaderEl = document.getElementById("vote-tally-header");
+    this.voteTallySubEl = document.getElementById("vote-tally-sub");
+    this.voteBarsContainerEl = document.getElementById("vote-bars-container");
+    this.voteLogTitleEl = document.getElementById("vote-log-title");
+    this.voteLogListEl = document.getElementById("vote-log-list");
+    this.btnRevealAccused = document.getElementById("btn-reveal-accused");
+    this.revealAccusedBtnTextEl = document.getElementById("reveal-accused-btn-text");
 
     // عناصر شاشة الترقب الدرامي (Suspense)
     this.suspenseAccusedBannerEl = document.getElementById("suspense-accused-banner");
@@ -418,6 +434,9 @@ class FaheyGame {
     this.btnGoToVote.addEventListener("click", () => this.goToVotingPhase());
 
     this.btnConfirmVote.addEventListener("click", () => this.confirmVoting());
+    if (this.btnRevealAccused) {
+      this.btnRevealAccused.addEventListener("click", () => this.proceedFromVoteTallyToSuspense());
+    }
     if (this.btnSuspenseContinue) {
       this.btnSuspenseContinue.addEventListener("click", () => {
         this.sfx.playPop();
@@ -1001,25 +1020,86 @@ class FaheyGame {
     clearInterval(this.timerInterval);
     this.sfx.playPop();
     this.selectedAccusedPlayerId = null;
+    this.votingOrder = [...this.players];
+    this.votingTurnIndex = 0;
+    this.playerVotes = [];
+    this.currentVoterChoiceId = null;
+
+    this.showScreen("voting");
+    if (this.votingTurnProgressBoxEl) this.votingTurnProgressBoxEl.style.display = "flex";
+    if (this.votingActiveStageEl) this.votingActiveStageEl.style.display = "block";
+    if (this.votingResultsStageEl) this.votingResultsStageEl.style.display = "none";
+
+    this.setupPlayerVotingTurn();
+  }
+
+  setupPlayerVotingTurn() {
+    const d = this.dialect;
+    const totalPlayers = this.votingOrder.length;
+    const currentVoter = this.votingOrder[this.votingTurnIndex];
+
+    this.currentVoterChoiceId = null;
     this.btnConfirmVote.disabled = true;
     this.btnConfirmVote.style.opacity = "0.5";
-    this.showScreen("voting");
-    if (this.votingInstructionsEl) {
-      this.votingInstructionsEl.innerHTML = this.dialect.votingInstruction;
+
+    // تحديث شارة عداد التصويت (تصويت اللاعب X من Y)
+    if (this.votingTurnCounterBadgeEl && typeof d.voteTurnCounter === "function") {
+      this.votingTurnCounterBadgeEl.textContent = d.voteTurnCounter(this.votingTurnIndex + 1, totalPlayers);
     }
+
+    // تحديث كبسولات تقدم اللاعبين في التصويت
+    if (this.votingPlayersPillsEl) {
+      this.votingPlayersPillsEl.innerHTML = "";
+      this.votingOrder.forEach((p, idx) => {
+        const pill = document.createElement("div");
+        if (idx < this.votingTurnIndex) {
+          pill.className = "q-player-pill done";
+          pill.innerHTML = `<span>✓</span><span>${p.name}</span>`;
+        } else if (idx === this.votingTurnIndex) {
+          pill.className = "q-player-pill active";
+          pill.innerHTML = `<span>🗳️</span><span>${p.name}</span>`;
+        } else {
+          pill.className = "q-player-pill";
+          pill.innerHTML = `<span>⏳</span><span>${p.name}</span>`;
+        }
+        this.votingPlayersPillsEl.appendChild(pill);
+      });
+    }
+
+    // تحديث عنوان من يصوّت الآن
+    if (this.votingInstructionsEl) {
+      this.votingInstructionsEl.innerHTML = typeof d.voterPrompt === "function"
+        ? d.voterPrompt(currentVoter.name)
+        : d.votingInstruction;
+    }
+
+    // تحديث نص زر تأكيد صوت اللاعب الحالي
+    if (this.confirmVoteBtnTextEl) {
+      const nextVoterName = (this.votingTurnIndex < totalPlayers - 1)
+        ? this.votingOrder[this.votingTurnIndex + 1].name
+        : null;
+      this.confirmVoteBtnTextEl.textContent = typeof d.btnConfirmPlayerVote === "function"
+        ? d.btnConfirmPlayerVote(nextVoterName)
+        : d.btnConfirmVote;
+    }
+
     this.renderVotingList();
   }
 
   renderVotingList() {
     this.votingListContainer.innerHTML = "";
-    
-    this.players.forEach(player => {
+    const currentVoter = this.votingOrder[this.votingTurnIndex];
+
+    // كل لاعب يصوت على أي لاعب آخر غير نفسه
+    const candidates = this.players.filter(p => !currentVoter || p.id !== currentVoter.id);
+
+    candidates.forEach(player => {
       const item = document.createElement("div");
-      item.className = "vote-item" + (this.selectedAccusedPlayerId === player.id ? " selected" : "");
+      item.className = "vote-item" + (this.currentVoterChoiceId === player.id ? " selected" : "");
       
       const badge = document.createElement("div");
       badge.className = "vote-badge";
-      badge.innerHTML = this.selectedAccusedPlayerId === player.id ? "🎯" : "🕵️";
+      badge.innerHTML = this.currentVoterChoiceId === player.id ? "🎯" : "🕵️";
 
       const nameSpan = document.createElement("span");
       nameSpan.textContent = player.name;
@@ -1028,7 +1108,7 @@ class FaheyGame {
       item.appendChild(nameSpan);
 
       item.addEventListener("click", () => {
-        this.selectedAccusedPlayerId = player.id;
+        this.currentVoterChoiceId = player.id;
         this.btnConfirmVote.disabled = false;
         this.btnConfirmVote.style.opacity = "1";
         this.sfx.playPop();
@@ -1040,13 +1120,125 @@ class FaheyGame {
   }
 
   confirmVoting() {
-    if (!this.selectedAccusedPlayerId) return;
+    if (!this.currentVoterChoiceId) return;
 
+    const currentVoter = this.votingOrder[this.votingTurnIndex];
+    const targetPlayer = this.players.find(p => p.id === this.currentVoterChoiceId);
+
+    this.playerVotes.push({
+      voterId: currentVoter.id,
+      voterName: currentVoter.name,
+      targetId: targetPlayer.id,
+      targetName: targetPlayer.name
+    });
+
+    this.sfx.playPop();
+
+    if (this.votingTurnIndex < this.votingOrder.length - 1) {
+      this.votingTurnIndex++;
+      this.setupPlayerVotingTurn();
+    } else {
+      // جميع اللاعبين صوّتوا ➔ عرض شاشة نتيجة فرز الأصوات
+      this.showVotingTallyResults();
+    }
+  }
+
+  showVotingTallyResults() {
+    this.sfx.playReveal();
+    const d = this.dialect;
+
+    if (this.votingTurnProgressBoxEl) this.votingTurnProgressBoxEl.style.display = "none";
+    if (this.votingActiveStageEl) this.votingActiveStageEl.style.display = "none";
+    if (this.votingResultsStageEl) this.votingResultsStageEl.style.display = "flex";
+
+    // حساب عدد الأصوات لكل لاعب
+    const voteCounts = {};
+    this.players.forEach(p => {
+      voteCounts[p.id] = 0;
+    });
+    this.playerVotes.forEach(v => {
+      if (voteCounts[v.targetId] !== undefined) {
+        voteCounts[v.targetId]++;
+      }
+    });
+
+    // ترتيب اللاعبين تنازلياً حسب عدد الأصوات
+    const sortedTally = [...this.players]
+      .map(p => ({
+        player: p,
+        votes: voteCounts[p.id] || 0
+      }))
+      .sort((a, b) => b.votes - a.votes);
+
+    const topCandidate = sortedTally[0];
+    this.selectedAccusedPlayerId = topCandidate.player.id;
+
+    if (this.voteTallyHeaderEl) {
+      this.voteTallyHeaderEl.textContent = d.voteTallyHeader || "📊 نتيجة فرز الأصوات!";
+    }
+    if (this.voteTallySubEl && typeof d.voteTallySub === "function") {
+      this.voteTallySubEl.innerHTML = d.voteTallySub(topCandidate.player.name, topCandidate.votes);
+    }
+
+    // بناء أشرطة التصويت المرئية لكل لاعب
+    const totalVotesCast = this.playerVotes.length || 1;
+    if (this.voteBarsContainerEl) {
+      this.voteBarsContainerEl.innerHTML = "";
+      sortedTally.forEach((item, idx) => {
+        const pct = Math.round((item.votes / totalVotesCast) * 100);
+        const isTop = idx === 0 && item.votes > 0;
+
+        const row = document.createElement("div");
+        row.className = "vote-bar-row" + (isTop ? " top-accused" : "");
+
+        const countText = typeof d.voteCountLabel === "function"
+          ? d.voteCountLabel(item.votes)
+          : `${item.votes} أصوات`;
+
+        row.innerHTML = `
+          <div class="vote-bar-fill" style="width: ${pct}%;"></div>
+          <div class="vote-bar-content">
+            <div class="vote-bar-name">
+              <span>${isTop ? "🎯" : "👤"}</span>
+              <span>${item.player.name}</span>
+            </div>
+            <div class="vote-bar-count-badge">${countText} (${pct}%)</div>
+          </div>
+        `;
+        this.voteBarsContainerEl.appendChild(row);
+      });
+    }
+
+    // بناء سجل من صوّت على من
+    if (this.voteLogTitleEl && d.voteLogTitle) {
+      this.voteLogTitleEl.textContent = d.voteLogTitle;
+    }
+    if (this.voteLogListEl) {
+      this.voteLogListEl.innerHTML = "";
+      this.playerVotes.forEach(v => {
+        const pill = document.createElement("div");
+        pill.className = "vote-log-pill";
+        pill.innerHTML = `
+          <span>🗳️ ${v.voterName}</span>
+          <span>⬅️</span>
+          <span class="vote-log-target">${v.targetName}</span>
+        `;
+        this.voteLogListEl.appendChild(pill);
+      });
+    }
+
+    // تحديث زر كشف حقيقة المتهم الأعلى أصواتاً
+    if (this.revealAccusedBtnTextEl && typeof d.btnRevealAccused === "function") {
+      this.revealAccusedBtnTextEl.textContent = d.btnRevealAccused(topCandidate.player.name);
+    }
+  }
+
+  proceedFromVoteTallyToSuspense() {
+    if (!this.selectedAccusedPlayerId) return;
     const accusedPlayer = this.players.find(p => p.id === this.selectedAccusedPlayerId);
     const isActuallyImpostor = this.impostorPlayerIds.includes(this.selectedAccusedPlayerId);
     const d = this.dialect;
 
-    // تشغيل مرحلة الترقب الدرامي وكشف الحقيقة بعد التصويت
     this.runVotingSuspenseReveal(accusedPlayer, isActuallyImpostor, d);
   }
 

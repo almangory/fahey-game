@@ -1141,6 +1141,126 @@ input:checked + .toggle-slider:before {
   color: #ffffff;
 }
 
+/* لوحة نتيجة فرز الأصوات التفصيلية */
+.voting-results-stage {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  animation: cardPop 0.35s ease-out;
+}
+
+.vote-bars-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.vote-bar-row {
+  background: var(--bg-subtle);
+  border: 1.5px solid var(--border-light);
+  border-radius: 14px;
+  padding: 10px 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.vote-bar-row.top-accused {
+  background: #fff1f2;
+  border-color: #fda4af;
+}
+
+.vote-bar-fill {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(13, 148, 136, 0.12);
+  transition: width 0.5s ease-out;
+  z-index: 0;
+}
+
+.vote-bar-row.top-accused .vote-bar-fill {
+  background: rgba(225, 29, 72, 0.14);
+}
+
+.vote-bar-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 800;
+  font-size: 0.98rem;
+}
+
+.vote-bar-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-main);
+}
+
+.vote-bar-row.top-accused .vote-bar-name {
+  color: var(--brand-rose);
+}
+
+.vote-bar-count-badge {
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 900;
+  color: var(--brand-indigo);
+}
+
+.vote-bar-row.top-accused .vote-bar-count-badge {
+  background: var(--brand-rose);
+  border-color: var(--brand-rose);
+  color: #ffffff;
+}
+
+.vote-log-box {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-light);
+  border-radius: 14px;
+  padding: 12px;
+  text-align: right;
+}
+
+.vote-log-title {
+  font-size: 0.88rem;
+  font-weight: 900;
+  color: var(--brand-indigo);
+  margin-bottom: 8px;
+}
+
+.vote-log-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+
+.vote-log-pill {
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  padding: 6px 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.vote-log-target {
+  color: var(--brand-rose);
+  font-weight: 900;
+}
+
 /* ==========================================================================
    شاشة الترقب الدرامي وكشف الحقيقة (Suspense & Heartbeat Reveal)
    ========================================================================== */
